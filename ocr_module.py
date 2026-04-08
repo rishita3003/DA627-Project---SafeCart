@@ -1,11 +1,18 @@
-import pytesseract
+import easyocr
 import cv2
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+# Initialize once (important)
+reader = easyocr.Reader(['en'])
 
 def extract_text(image_path):
     img = cv2.imread(image_path)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    text = pytesseract.image_to_string(gray)
-    return text
+    if img is None:
+        return "Image not readable"
+
+    results = reader.readtext(img)
+
+    # Combine detected text
+    extracted_text = " ".join([res[1] for res in results])
+
+    return extracted_text
