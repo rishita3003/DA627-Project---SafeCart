@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SafeCart</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #f4f4f4;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+        }
+        .SAFE { background: green; }
+        .UNSAFE { background: red; }
+        .UNKNOWN { background: orange; }
+    </style>
+</head>
+
+<body>
+    <h1>🛒 SafeCart</h1>
+
+    <div class="container">
+        <input type="text" id="allergensInput" placeholder="Enter allergens (comma separated)">
+        <br><br>
+        <input type="file" id="imageInput">
+        <br><br>
+        <button onclick="uploadImage()">Scan Product</button>
+
+        <div id="output"></div>
+    </div>
+
+<script>
+async function uploadImage() {
+    const fileInput = document.getElementById("imageInput");
+    const file = fileInput.files[0];
+    const allergens = document.getElementById("allergensInput").value;
+
+    let formData = new FormData();
+    formData.append("file", file);
+    formData.append("user_allergens", allergens);
+
+    const response = await fetch("/scan-product/", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await response.json();
+
+    let statusClass = data.analysis.status.includes("SAFE") ? "SAFE" :
+                      data.analysis.status.includes("UNSAFE") ? "UNSAFE" : "UNKNOWN";
+
+    document.getElementById("output").innerHTML = `
+        <h3>Extracted Text:</h3>
+        <p>${data.ocr_text}</p>
+
+        <h3>Allergens:</h3>
+        <p style="color:red">${data.analysis.allergens_found.join(", ")}</p>
+
+        <h3>Confidence:</h3>
+        <p>${data.analysis.confidence}</p>
+
+        <div class="result ${statusClass}">
+            ${data.analysis.status}
+        </div>
+    `;
+}
+</script>
+
+</body>
+</html>
