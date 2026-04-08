@@ -36,7 +36,7 @@ Image → OCR → Text Extraction → NLP → Allergen Detection → Confidence 
 
 ## 🖼️ Example UI
 
-![SafeCart UI](Screenshot 2026-04-08 144735.png)
+![SafeCart UI](ui_pic)
 
 ## 🛠️ Tech Stack
 
